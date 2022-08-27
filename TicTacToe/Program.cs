@@ -1,16 +1,25 @@
-﻿namespace TicTacToe;
+﻿using System.Diagnostics;
+
+namespace TicTacToe;
 
 internal class Program {
     private static void Main(string[] args) {
-        var board = new Board();
+        var gameManager = new GameManager();
+        var gameResult = gameManager.PlayGame();
+        Debug.Assert(gameResult is not BoardStatus.InProgress);
 
-        if (board.TileEmpty(1, 1))
-            board.ChangeTile(1, 1, PieceType.O);
-
-        if (board.TileEmpty(2, 2))
-            board.ChangeTile(2, 2, PieceType.X);
-
-        var successors = board.GetSuccesors(Player.O);
-        foreach (var successor in successors) successor.Print();
+        switch (gameResult) {
+            case BoardStatus.Draw:
+                Console.WriteLine("It's a draw!");
+                break;
+            case BoardStatus.OWon:
+                Console.WriteLine("Player O won!");
+                break;
+            case BoardStatus.XWon:
+                Console.WriteLine("Player X Won");
+                break;
+            default:
+                throw new Exception("Invalid board status type");
+        }
     }
 }

@@ -53,7 +53,7 @@ public class Board {
     public List<Board> GetSuccesors(Player playerInTurn) {
         var successors = new List<Board>();
 
-        var playerPieceType = matchPlayerToPieceType(playerInTurn);
+        var playerPieceType = MatchPlayerToPieceType(playerInTurn);
 
         for (var i = 0; i < 3; i++)
         for (var j = 0; j < 3; j++)
@@ -179,7 +179,7 @@ public class Board {
         return true;
     }
 
-    private PieceType matchPlayerToPieceType(Player player) {
+    public static PieceType MatchPlayerToPieceType(Player player) {
         if (player == Player.O) return PieceType.O;
         if (player == Player.X) return PieceType.X;
         throw new ArgumentException("Unknown Player Type");
