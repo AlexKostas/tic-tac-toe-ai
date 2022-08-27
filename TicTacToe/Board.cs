@@ -18,7 +18,7 @@ public class Board {
 
     public void ChangeTile(int row, int column, PieceType newPiece) {
         Debug.Assert(row is >= 0 and < 3);
-        Debug.Assert(column is > 0 and < 3);
+        Debug.Assert(column is >= 0 and < 3);
         Debug.Assert(newPiece is not PieceType.Empty);
         Debug.Assert(board[row, column] is not PieceType.X or PieceType.O);
 
@@ -26,15 +26,41 @@ public class Board {
         updateStatus();
     }
 
+    public Board PlacePieceInNewCopy(int row, int column, PieceType newPiece) {
+        var newBoard = new Board();
+
+        for (var i = 0; i < 3; i++)
+        for (var j = 0; j < 3; j++)
+            newBoard.board[i, j] = board[i, j];
+
+        newBoard.updateStatus();
+        newBoard.ChangeTile(row, column, newPiece);
+
+        return newBoard;
+    }
+
     public bool TileEmpty(int row, int column) {
         Debug.Assert(row is >= 0 and < 3);
-        Debug.Assert(column is > 0 and < 3);
+        Debug.Assert(column is >= 0 and < 3);
 
         return board[row, column] == PieceType.Empty;
     }
 
     public BoardStatus GetStatus() {
         return status;
+    }
+
+    public List<Board> GetSuccesors(Player playerInTurn) {
+        var successors = new List<Board>();
+
+        var playerPieceType = matchPlayerToPieceType(playerInTurn);
+
+        for (var i = 0; i < 3; i++)
+        for (var j = 0; j < 3; j++)
+            if (TileEmpty(i, j))
+                successors.Add(PlacePieceInNewCopy(i, j, playerPieceType));
+
+        return successors;
     }
 
     public void Print() {
@@ -61,7 +87,7 @@ public class Board {
                     Console.Write("X|");
                     break;
                 default:
-                    Console.WriteLine("An error occured in printRow: Unknown PieceType");
+                    throw new Exception("Unknown PieceType");
                     break;
             }
 
@@ -81,6 +107,7 @@ public class Board {
         else status = BoardStatus.InProgress;
     }
 
+    // TODO: Update this to use the Player Enum
     private bool winningPatternExists(PieceType player) {
         Debug.Assert(player != PieceType.Empty);
 
@@ -150,5 +177,11 @@ public class Board {
                 return false;
 
         return true;
+    }
+
+    private PieceType matchPlayerToPieceType(Player player) {
+        if (player == Player.O) return PieceType.O;
+        if (player == Player.X) return PieceType.X;
+        throw new ArgumentException("Unknown Player Type");
     }
 }
