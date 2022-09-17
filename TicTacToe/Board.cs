@@ -10,8 +10,8 @@ public class Board {
         board = new PieceType[3, 3];
 
         for (var i = 0; i < 3; i++)
-        for (var j = 0; j < 3; j++)
-            board[i, j] = PieceType.Empty;
+            for (var j = 0; j < 3; j++)
+                board[i, j] = PieceType.Empty;
 
         status = BoardStatus.InProgress;
     }
@@ -30,6 +30,18 @@ public class Board {
         updateStatus();
     }
 
+    public void UndoMove(Move move) {
+        var row = move.GetDestRow();
+        var column = move.GetDestColumn();
+
+        Debug.Assert(row is >= 0 and < 3);
+        Debug.Assert(column is >= 0 and < 3);
+        Debug.Assert(board[row, column] is PieceType.X or PieceType.O);
+
+        board[row, column] = PieceType.Empty;
+        updateStatus();
+    }
+
     public void ChangeTile(int row, int column, PieceType newPiece) {
         Debug.Assert(row is >= 0 and < 3);
         Debug.Assert(column is >= 0 and < 3);
@@ -44,8 +56,8 @@ public class Board {
         var newBoard = new Board();
 
         for (var i = 0; i < 3; i++)
-        for (var j = 0; j < 3; j++)
-            newBoard.board[i, j] = board[i, j];
+            for (var j = 0; j < 3; j++)
+                newBoard.board[i, j] = board[i, j];
 
         newBoard.updateStatus();
         newBoard.ChangeTile(row, column, newPiece);
@@ -64,15 +76,31 @@ public class Board {
         return status;
     }
 
+    public List<Move> GetPossibleMoves(Player playerInTurn) {
+        var moves = new List<Move>();
+
+        var playerPieceType = MatchPlayerToPieceType(playerInTurn);
+        Debug.Assert(playerPieceType is not PieceType.Empty);
+
+        for (var i = 0; i < 3; i++)
+            for (var j = 0; j < 3; j++)
+                if (TileEmpty(i, j)) {
+                    var newMove = new Move(i, j, playerInTurn);
+                    moves.Add(newMove);
+                }
+
+        return moves;
+    }
+
     public List<Board> GetSuccesors(Player playerInTurn) {
         var successors = new List<Board>();
 
         var playerPieceType = MatchPlayerToPieceType(playerInTurn);
 
         for (var i = 0; i < 3; i++)
-        for (var j = 0; j < 3; j++)
-            if (TileEmpty(i, j))
-                successors.Add(PlacePieceInNewCopy(i, j, playerPieceType));
+            for (var j = 0; j < 3; j++)
+                if (TileEmpty(i, j))
+                    successors.Add(PlacePieceInNewCopy(i, j, playerPieceType));
 
         return successors;
     }
@@ -186,9 +214,9 @@ public class Board {
 
     private bool boardIsFull() {
         for (var i = 0; i < 3; i++)
-        for (var j = 0; j < 3; j++)
-            if (board[i, j] == PieceType.Empty)
-                return false;
+            for (var j = 0; j < 3; j++)
+                if (board[i, j] == PieceType.Empty)
+                    return false;
 
         return true;
     }

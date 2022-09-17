@@ -17,10 +17,7 @@ public class GameManager {
             Move moveToPlay;
             if (playerInTurn == AIPlayer) {
                 // AI Plays
-                Console.WriteLine("Player " + getPlayerName(playerInTurn) + ", it's your turn!\n");
-                var position = getValidPosition();
-
-                moveToPlay = new Move(position.row, position.column, playerInTurn);
+                moveToPlay = AI.GetBestMove(board, playerInTurn);
             }
             else {
                 // Player Plays
