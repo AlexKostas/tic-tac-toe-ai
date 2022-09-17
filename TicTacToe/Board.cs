@@ -16,6 +16,20 @@ public class Board {
         status = BoardStatus.InProgress;
     }
 
+    public void PlayMove(Move move) {
+        var row = move.GetDestRow();
+        var column = move.GetDestColumn();
+        var pieceType = MatchPlayerToPieceType(move.GetPlayer());
+
+        Debug.Assert(row is >= 0 and < 3);
+        Debug.Assert(column is >= 0 and < 3);
+        Debug.Assert(pieceType is not PieceType.Empty);
+        Debug.Assert(board[row, column] is not PieceType.X or PieceType.O);
+
+        board[row, column] = pieceType;
+        updateStatus();
+    }
+
     public void ChangeTile(int row, int column, PieceType newPiece) {
         Debug.Assert(row is >= 0 and < 3);
         Debug.Assert(column is >= 0 and < 3);

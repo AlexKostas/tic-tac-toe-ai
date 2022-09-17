@@ -3,6 +3,7 @@
 public class GameManager {
     private Board board;
     private Player playerInTurn;
+    private const Player AIPlayer = Player.O;
 
     public GameManager() {
         board = new Board();
@@ -13,11 +14,24 @@ public class GameManager {
         board.Print();
 
         while (board.GetStatus() == BoardStatus.InProgress) {
-            Console.WriteLine("Player " + getPlayerName(playerInTurn) + ", it's your turn!\n");
-            var position = getValidPosition();
+            Move moveToPlay;
+            if (playerInTurn == AIPlayer) {
+                // AI Plays
+                Console.WriteLine("Player " + getPlayerName(playerInTurn) + ", it's your turn!\n");
+                var position = getValidPosition();
 
-            board.ChangeTile(position.row, position.column, Board.MatchPlayerToPieceType(playerInTurn));
+                moveToPlay = new Move(position.row, position.column, playerInTurn);
+            }
+            else {
+                // Player Plays
+                Console.WriteLine("Player " + getPlayerName(playerInTurn) + ", it's your turn!\n");
+                var position = getValidPosition();
 
+                moveToPlay = new Move(position.row, position.column, playerInTurn);
+                //board.ChangeTile(position.row, position.column, Board.MatchPlayerToPieceType(playerInTurn));
+            }
+
+            board.PlayMove(moveToPlay);
             board.Print();
             alternateTurns();
         }
