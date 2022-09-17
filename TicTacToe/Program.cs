@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
+using TicTacToe.Enums;
 
 namespace TicTacToe;
 
-internal class Program {
+internal static class Program {
     private static void Main(string[] args) {
         while (true) {
             var gameManager = new GameManager();
@@ -19,15 +20,17 @@ internal class Program {
                 case BoardStatus.XWon:
                     Console.WriteLine("Player X Won");
                     break;
+                case BoardStatus.InProgress:
+                    throw new Exception("Invalid board status type");
                 default:
                     throw new Exception("Invalid board status type");
             }
 
             Console.WriteLine("Press 'P' to play again");
             var input = Console.ReadLine();
-            input = input.ToLower();
-            input = input.Trim();
-            if (!input.Equals("p")) break;
+            input = input?.ToLower();
+            input = input?.Trim();
+            if (input != null && !input.Equals("p")) break;
         }
     }
 }

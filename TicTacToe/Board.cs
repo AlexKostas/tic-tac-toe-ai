@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
+using TicTacToe.Enums;
 
 namespace TicTacToe;
 
 public class Board {
-    private PieceType[,] board;
+    private readonly PieceType[,] board;
     private BoardStatus status;
 
     public Board() {
@@ -17,9 +18,9 @@ public class Board {
     }
 
     public void PlayMove(Move move) {
-        var row = move.GetDestRow();
-        var column = move.GetDestColumn();
-        var pieceType = MatchPlayerToPieceType(move.GetPlayer());
+        var row = move.GetDestinationRow();
+        var column = move.GetDestinationColumn();
+        var pieceType = matchPlayerToPieceType(move.GetPlayer());
 
         Debug.Assert(row is >= 0 and < 3);
         Debug.Assert(column is >= 0 and < 3);
@@ -31,8 +32,8 @@ public class Board {
     }
 
     public void UndoMove(Move move) {
-        var row = move.GetDestRow();
-        var column = move.GetDestColumn();
+        var row = move.GetDestinationRow();
+        var column = move.GetDestinationColumn();
 
         Debug.Assert(row is >= 0 and < 3);
         Debug.Assert(column is >= 0 and < 3);
@@ -42,67 +43,28 @@ public class Board {
         updateStatus();
     }
 
-    public void ChangeTile(int row, int column, PieceType newPiece) {
-        Debug.Assert(row is >= 0 and < 3);
-        Debug.Assert(column is >= 0 and < 3);
-        Debug.Assert(newPiece is not PieceType.Empty);
-        Debug.Assert(board[row, column] is not PieceType.X or PieceType.O);
 
-        board[row, column] = newPiece;
-        updateStatus();
-    }
-
-    public Board PlacePieceInNewCopy(int row, int column, PieceType newPiece) {
-        var newBoard = new Board();
-
-        for (var i = 0; i < 3; i++)
-            for (var j = 0; j < 3; j++)
-                newBoard.board[i, j] = board[i, j];
-
-        newBoard.updateStatus();
-        newBoard.ChangeTile(row, column, newPiece);
-
-        return newBoard;
-    }
-
-    public bool TileEmpty(int row, int column) {
+    public bool IsTileEmpty(int row, int column) {
         Debug.Assert(row is >= 0 and < 3);
         Debug.Assert(column is >= 0 and < 3);
 
         return board[row, column] == PieceType.Empty;
     }
 
-    public BoardStatus GetStatus() {
-        return status;
-    }
-
     public List<Move> GetPossibleMoves(Player playerInTurn) {
         var moves = new List<Move>();
 
-        var playerPieceType = MatchPlayerToPieceType(playerInTurn);
+        var playerPieceType = matchPlayerToPieceType(playerInTurn);
         Debug.Assert(playerPieceType is not PieceType.Empty);
 
         for (var i = 0; i < 3; i++)
             for (var j = 0; j < 3; j++)
-                if (TileEmpty(i, j)) {
+                if (IsTileEmpty(i, j)) {
                     var newMove = new Move(i, j, playerInTurn);
                     moves.Add(newMove);
                 }
 
         return moves;
-    }
-
-    public List<Board> GetSuccesors(Player playerInTurn) {
-        var successors = new List<Board>();
-
-        var playerPieceType = MatchPlayerToPieceType(playerInTurn);
-
-        for (var i = 0; i < 3; i++)
-            for (var j = 0; j < 3; j++)
-                if (TileEmpty(i, j))
-                    successors.Add(PlacePieceInNewCopy(i, j, playerPieceType));
-
-        return successors;
     }
 
     public void Print() {
@@ -113,6 +75,10 @@ public class Board {
         }
 
         Console.Write("");
+    }
+
+    public BoardStatus GetStatus() {
+        return status;
     }
 
     private void printRow(int row) {
@@ -130,7 +96,6 @@ public class Board {
                     break;
                 default:
                     throw new Exception("Unknown PieceType");
-                    break;
             }
 
         Console.WriteLine("");
@@ -149,7 +114,6 @@ public class Board {
         else status = BoardStatus.InProgress;
     }
 
-    // TODO: Update this to use the Player Enum
     private bool winningPatternExists(PieceType player) {
         Debug.Assert(player != PieceType.Empty);
 
@@ -221,7 +185,7 @@ public class Board {
         return true;
     }
 
-    public static PieceType MatchPlayerToPieceType(Player player) {
+    private static PieceType matchPlayerToPieceType(Player player) {
         if (player == Player.O) return PieceType.O;
         if (player == Player.X) return PieceType.X;
         throw new ArgumentException("Unknown Player Type");

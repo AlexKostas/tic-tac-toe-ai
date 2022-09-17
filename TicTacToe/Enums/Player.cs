@@ -1,4 +1,4 @@
-﻿namespace TicTacToe;
+﻿namespace TicTacToe.Enums;
 
 public enum Player {
     X,

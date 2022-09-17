@@ -1,22 +1,24 @@
-﻿namespace TicTacToe;
+﻿using TicTacToe.Enums;
+
+namespace TicTacToe;
 
 public class Move {
-    private int destRow;
-    private int destColumn;
-    private Player player;
+    private readonly int destinationRow;
+    private readonly int destinationColumn;
+    private readonly Player player;
 
-    public Move(int destRow, int destColumn, Player player) {
-        this.destRow = destRow;
-        this.destColumn = destColumn;
+    public Move(int destinationRow, int destinationColumn, Player player) {
+        this.destinationRow = destinationRow;
+        this.destinationColumn = destinationColumn;
         this.player = player;
     }
 
-    public int GetDestRow() {
-        return destRow;
+    public int GetDestinationRow() {
+        return destinationRow;
     }
 
-    public int GetDestColumn() {
-        return destColumn;
+    public int GetDestinationColumn() {
+        return destinationColumn;
     }
 
     public Player GetPlayer() {

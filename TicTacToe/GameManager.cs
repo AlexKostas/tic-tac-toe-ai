@@ -1,7 +1,9 @@
-﻿namespace TicTacToe;
+﻿using TicTacToe.Enums;
+
+namespace TicTacToe;
 
 public class GameManager {
-    private Board board;
+    private readonly Board board;
     private Player playerInTurn;
     private const Player AIPlayer = Player.O;
 
@@ -17,6 +19,7 @@ public class GameManager {
             Move moveToPlay;
             if (playerInTurn == AIPlayer) {
                 // AI Plays
+                Console.WriteLine("Calculating best move...");
                 moveToPlay = AI.GetBestMove(board, playerInTurn);
             }
             else {
@@ -42,7 +45,7 @@ public class GameManager {
         do {
             newPosition.row = getValidIndex("Give row number (1-3)", 1, 3) - 1;
             newPosition.column = getValidIndex("Give column number (1-3)", 1, 3) - 1;
-        } while (!board.TileEmpty(newPosition.row, newPosition.column));
+        } while (!board.IsTileEmpty(newPosition.row, newPosition.column));
 
         return newPosition;
     }
@@ -51,17 +54,16 @@ public class GameManager {
         playerInTurn = playerInTurn == Player.O ? Player.X : Player.O;
     }
 
-    private char getPlayerName(Player player) {
+    private static char getPlayerName(Player player) {
         return player == Player.O ? 'O' : 'X';
     }
 
-    private int getValidIndex(string message, int lowerLimit, int upperLimit) {
+    private static int getValidIndex(string message, int lowerLimit, int upperLimit) {
         int index;
         do {
             Console.WriteLine(message);
             var input = Console.ReadLine();
-            while (!int.TryParse(input, out index)) {
-            }
+            while (!int.TryParse(input, out index)) { }
         } while (index < lowerLimit || index > upperLimit);
 
         return index;
